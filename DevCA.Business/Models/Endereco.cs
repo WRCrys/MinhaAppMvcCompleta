@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace AppMvcBasica.Models
+namespace DevCA.Business.Models
 {
     public class Endereco : Entity
     {

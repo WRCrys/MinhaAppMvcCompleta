@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AppMvcBasica.Models
+namespace DevCA.Business.Models
 {
     public class Fornecedor : Entity
     {
