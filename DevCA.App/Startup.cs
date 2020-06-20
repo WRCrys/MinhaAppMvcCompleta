@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DevCA.Data.Context;
-using DevCA.Business.Models;
 using DevCA.Business.Interfaces;
 using DevCA.Data.Repository;
+using AutoMapper;
 
 namespace DevCA.App
 {
@@ -35,6 +35,10 @@ namespace DevCA.App
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //Configuração do AutoMapper
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddControllersWithViews();
             services.AddRazorPages();
 

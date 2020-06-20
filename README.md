@@ -58,6 +58,16 @@ PM> `Update-Database`
 
 
 
+####Configurando o Automapper para o uso de ViewModel
+
+PM> `Install-Package automapper.extensions.microsoft.dependencyinjection`
+
+
+------------
+
+
+
+
 
 
 
