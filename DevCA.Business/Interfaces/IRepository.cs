@@ -12,7 +12,7 @@ namespace DevCA.Business.Interfaces
 
         Task<TEntity> ObterPorId(Guid id);
 
-        Task<List<TEntity>> ObterTodos(TEntity entity);
+        Task<List<TEntity>> ObterTodos();
 
         Task Atualizar(TEntity entity);
 
