@@ -6,6 +6,8 @@ using DevCA.Business.Interfaces;
 using AutoMapper;
 using System.Collections.Generic;
 using DevCA.Business.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace DevCA.App.Controllers
 {
@@ -54,9 +56,18 @@ namespace DevCA.App.Controllers
 
             if (!ModelState.IsValid) return View(produtoViewModel);
 
+            var imgPrefixo = Guid.NewGuid() + "_";
+
+            if(! await UploadArquivo(produtoViewModel.ImagemUpload, imgPrefixo))
+            {
+                return View(produtoViewModel);
+            }
+
+            produtoViewModel.Imagem = imgPrefixo + produtoViewModel.ImagemUpload.FileName;
+
             await _produtoRepository.Adicionar(_mapper.Map<Produto>(produtoViewModel));
 
-            return View(produtoViewModel);
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Edit(Guid id)
@@ -74,9 +85,35 @@ namespace DevCA.App.Controllers
         {
             if (id != produtoViewModel.id) return NotFound();
 
-            if (ModelState.IsValid) return View(produtoViewModel);
+            var produtoAtualizacao = await ObterProduto(id);
+            
+            produtoViewModel.Imagem = produtoAtualizacao.Imagem;
 
-            await _produtoRepository.Atualizar(_mapper.Map<Produto>(produtoViewModel));
+            if (!ModelState.IsValid) return View(produtoViewModel);
+
+            if (produtoViewModel.ImagemUpload != null)
+            {
+                var imgPrefixo = Guid.NewGuid() + "_";
+
+                if (!await UploadArquivo(produtoViewModel.ImagemUpload, imgPrefixo))
+                {
+                    return View(produtoViewModel);
+                }
+
+                produtoViewModel.Imagem = imgPrefixo + produtoViewModel.ImagemUpload.FileName;
+            }
+
+            produtoViewModel.FornecedorId = produtoAtualizacao.FornecedorId;
+
+            try
+            {
+                await _produtoRepository.Atualizar(_mapper.Map<Produto>(produtoViewModel));
+            }
+            catch (Exception error)
+            {
+                Console.WriteLine(error.Message);
+                throw;
+            }
             
             return RedirectToAction("Index");
     }
@@ -121,6 +158,26 @@ namespace DevCA.App.Controllers
             produto.Fornecedores = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
 
             return produto;
+        }
+
+        private async Task<bool> UploadArquivo(IFormFile arquivo, string imgPrefixo)
+        {
+            if (arquivo.Length <= 0) return false;
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Imagens", imgPrefixo + arquivo.FileName);
+
+            if (System.IO.File.Exists(path))
+            {
+                ModelState.AddModelError(string.Empty, "Já existe um arquivo com este nome!");
+                return false;
+            }
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await arquivo.CopyToAsync(stream);
+            }
+
+            return true;
         }
     }
 }
