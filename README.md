@@ -1,4 +1,4 @@
-﻿![](https://i7.pngguru.com/preview/186/665/88/microsoft-logo-power-bi-computer-software-windows-logos.jpg)
+﻿![](https://gixnetwork.org/wp-content/uploads/2019/04/Microsoft-logo_rgb_gray-1024x459.png)
 # MinhaAppMvcCompleta
 
 ## Comandos para o Gerenciador de Pacotes

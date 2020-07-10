@@ -15,14 +15,18 @@ namespace DevCA.App.Controllers
     {
         private readonly IProdutoRepository _produtoRepository;
         private readonly IFornecedorRepository _fornecedorRepository;
+        private readonly IProdutoService _produtoService;
         private readonly IMapper _mapper;
 
         public ProdutosController(IProdutoRepository produtoRepository,
                                   IFornecedorRepository fornecedorRepository,
-                                  IMapper mapper)
+                                  IProdutoService produtoService,
+                                  INotificador notificador,
+                                  IMapper mapper) : base(notificador)
         {
             _produtoRepository = produtoRepository;
             _fornecedorRepository = fornecedorRepository;
+            _produtoService = produtoService;
             _mapper = mapper;
         }
 
@@ -62,14 +66,18 @@ namespace DevCA.App.Controllers
 
             var imgPrefixo = Guid.NewGuid() + "_";
 
-            if(! await UploadArquivo(produtoViewModel.ImagemUpload, imgPrefixo))
+            if (!await UploadArquivo(produtoViewModel.ImagemUpload, imgPrefixo))
             {
                 return View(produtoViewModel);
             }
 
             produtoViewModel.Imagem = imgPrefixo + produtoViewModel.ImagemUpload.FileName;
 
-            await _produtoRepository.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+            await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+
+            if (!OperacaoValida()) return View(produtoViewModel);
+
+            TempData["Sucesso"] = "Produto cadastrado com sucesso!";
 
             return RedirectToAction("Index");
         }
@@ -80,7 +88,7 @@ namespace DevCA.App.Controllers
             var produtoViewModel = await ObterProduto(id);
 
             if (produtoViewModel == null) return NotFound();
-            
+
             return View(produtoViewModel);
         }
 
@@ -92,7 +100,7 @@ namespace DevCA.App.Controllers
             if (id != produtoViewModel.id) return NotFound();
 
             var produtoAtualizacao = await ObterProduto(id);
-            
+
             produtoViewModel.Imagem = produtoAtualizacao.Imagem;
 
             if (!ModelState.IsValid) return View(produtoViewModel);
@@ -111,18 +119,14 @@ namespace DevCA.App.Controllers
 
             produtoViewModel.FornecedorId = produtoAtualizacao.FornecedorId;
 
-            try
-            {
-                await _produtoRepository.Atualizar(_mapper.Map<Produto>(produtoViewModel));
-            }
-            catch (Exception error)
-            {
-                Console.WriteLine(error.Message);
-                throw;
-            }
-            
+            await _produtoService.Atualizar(_mapper.Map<Produto>(produtoViewModel));
+
+            if (!OperacaoValida()) return View(produtoViewModel);
+
+            TempData["Sucesso"] = "Produto atualizado com sucesso!";
+
             return RedirectToAction("Index");
-    }
+        }
 
         [Route("excluir-produto/{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
@@ -147,7 +151,11 @@ namespace DevCA.App.Controllers
             {
                 return NotFound();
             }
-            await _produtoRepository.Remover(id);
+            await _produtoService.Remover(id);
+
+            if (!OperacaoValida()) return View(produto);
+
+            TempData["Sucesso"] = "Produto excluído com sucesso!";
 
             return RedirectToAction(nameof(Index));
         }

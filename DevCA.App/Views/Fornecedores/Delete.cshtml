@@ -8,9 +8,14 @@
 <h1>@ViewData["Title"]</h1>
 
 <div>
+    <div class="col col-md-10">
+        <vc:summary></vc:summary>
+    </div>
+
     <h4>Esta ação será permanente!</h4>
     <hr />
     <dl class="row">
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Nome)
         </dt>
