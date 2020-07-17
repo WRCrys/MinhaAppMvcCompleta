@@ -10,6 +10,11 @@
 <vc:summary></vc:summary>
 
 <p>
-    <a class="btn btn-info" asp-action="Create">Novo Produto</a>
+    <a class="btn btn-info" 
+       disable-by-claim-name="Produto" 
+       disable-by-claim-value="Adicionar" 
+       asp-action="Create">
+    Novo Produto
+    </a>
 </p>
 <partial name="_ListaProdutos" />

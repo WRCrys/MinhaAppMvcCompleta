@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using DevCA.App.ViewModels;
 
@@ -13,6 +10,7 @@ namespace DevCA.App.Data
             : base(options)
         {
         }
-        public DbSet<DevCA.App.ViewModels.ProdutoViewModel> ProdutoViewModel { get; set; }
+
+        //public DbSet<ProdutoViewModel> ProdutoViewModel { get; set; }
     }
 }
